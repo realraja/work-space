@@ -1,113 +1,182 @@
-import Image from 'next/image'
+"use client";
+import { IoAddCircleOutline } from "react-icons/io5";
+import { FaCheck } from "react-icons/fa6";
+import { RxCross2 } from "react-icons/rx";
+
+import { useEffect, useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import {GridLoader} from 'react-spinners'
+import ConfirmButton from "./components/ConfirmDelete";
 
 export default function Home() {
+  const [id, setId] = useState("");
+  const [abcId, setAbcId] = useState(false);
+  const [form, setForm] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [workList, setWorkList] = useState([]);
+  const [isError, setIsError] = useState(false);
+
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [deleteId, setDeleteId] = useState('');
+
+
+  const handleAddForm = async () =>{
+    try {
+      const {data} = await axios.post('/api/add-work',{
+        id,abcId: abcId?'yes':'no' ,
+        form: form?'yes':'no' 
+      })
+  
+      if(data.success){
+        fetchWorkList();
+        toast.success(data.message);
+      }else{
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log(error)
+      toast.error(error.message);
+    }
+  }
+
+  const handleDelete = async() =>{
+    try {
+      const {data} = await axios.delete(`/api/add-work/${deleteId}`)
+      console.log(data)
+      if(data.success){
+        toast.success(data.message)
+        fetchWorkList();
+      }else{
+        toast.error(data.message)
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message)
+    }
+  }
+
+
+  const fetchWorkList = async() =>{
+    try {
+      const {data} = await axios.get('/api/add-work');
+      console.log(data);
+      if(data.success){
+        setPageLoading(false);
+        setWorkList(data.data);
+      }else{
+        setPageLoading(false);
+        setIsError(true);
+        toast.success(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+      setPageLoading(false);
+      setIsError(true);
+    }
+  }
+
+  useEffect(()=>{
+    fetchWorkList();
+  },[])
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.js</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
+    <div>
+      <ConfirmButton comfirmState={deleteConfirm} setComfirmState={setDeleteConfirm} buttonText={'Delete'} runFunction={handleDelete} />
+      {/* <TheAddForm comfirmState={confirm} setComfirmState={setConfirm} /> */}
+      <div className="bg-gradient-to-r from-rose-800 to-violet-500 rounded text-4xl w-[90%] m-auto py-3 my-3 text-center">
+        <h1>Filled Forms</h1>
+      </div>
+
+      <div className="bg-gradient-to-r from-rose-800 to-violet-500 rounded w-[75%] m-auto py-5">
+        <div className="flex justify-center items-center gap-x-6 ">
+          <input
+            className="w-[30%] border-[1px] rounded-xl border-gray-500 outline-none py-1 px-3 text-lg"
+            value={id}
+            onChange={(e) => setId(e.target.value)}
+            type="number"
+          />
+
+          <div className="flex items-center gap-x-1">
+            <input
+              defaultChecked={abcId}
+              onChange={() => setAbcId((abcId) => !abcId)}
+              className="accent-violet-700 scale-150 cursor-pointer"
+              type="checkbox"
+              id="CharacterInput"
             />
-          </a>
+            <label className="text-xl">ABC</label>
+          </div>
+
+          <div className="flex items-center gap-x-1">
+            <input
+              defaultChecked={form}
+              onChange={() => setForm((form) => !form)}
+              className="accent-violet-700 scale-150 cursor-pointer"
+              type="checkbox"
+              id="CharacterInput"
+            />
+            <label className="text-xl">FORM</label>
+          </div>
+        </div>
+
+        <div className="flex justify-center items-center my-4 cursor-pointer  ">
+          <button
+            onClick={handleAddForm}
+            className="active:scale-105 duration-75 inline-flex items-center justify-center p-0.5  overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-r from-rose-600 to-violet-500 group-hover:from-rose-600 group-hover:to-violet-500 hover:text-white  focus:outline-none "
+          >
+            <span className="flex justify-center items-center px-8 py-2.5 transition-all ease-in duration-75 bg-white rounded-md group-hover:bg-opacity-0">
+              <IoAddCircleOutline className="mr-3 w-6 h-6" />
+              Add App
+            </span>
+          </button>
         </div>
       </div>
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+{loading?<div className='h-[40vh] w-full flex flex-col items-center justify-center'> <GridLoader speedMultiplier={2} color='red' size={40} /> </div> :<div className="flex flex-wrap justify-around items-center gap-5 my-5 w-[70%] m-auto">
+        
+        {workList.map((item) => {
+          return (
+            <div
+              onContextMenu={(ev) => {
+                ev.preventDefault();
+                setDeleteId(item._id);
+                setDeleteConfirm(true);
+              }}
+              key={item._id}
+              className={`${(item.date[3]+item.date[4])%2 === 0? 'bg-sky-200':'bg-fuchsia-200'} flex flex-col justify-center items-center text-center border-2 rounded-xl p-3   space-y-3  hover:bg-black/10`}
+            >
+              <h1 className="mb-3 text-rose-600 min-w-[50%] border-b-2 border-gray-500 ">
+                {item.id}
+              </h1>
 
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+              {item.id && (
+                <div
+                  className=" flex justify-around p-1 border-[1px] rounded cursor-pointer text-2xl  hover:text-violet-700 gap-1"
+                >
+                  <span>ABC :</span>
+                  {item.abcId === 'no'?<RxCross2 className="m-auto text-rose-400" />:<FaCheck className="m-auto text-green-400" />}
+                  {/* <marquee truespeed>{id} </marquee> */}
+                  {/* <IoCopyOutline className="m-auto" /> */}
+                </div>
+              )}
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800 hover:dark:bg-opacity-30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore the Next.js 13 playground.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+              <button
+                className="flex justify-around p-1 items-center border-[1px] rounded cursor-pointer text-2xl  hover:text-violet-700 gap-1"
+              >
+              <span>FORM :</span>
+              {item.form === 'no'?<RxCross2 className="m-auto text-rose-400" />:<FaCheck className="m-auto text-green-400" />}
+                {/* <IoCopyOutline className="m-auto" /> */}
+              </button>
+              <p className="flex">
+              {item.date[2]}:{item.date[1]}| {item.date[3]}-{item.date[4]}-{item.date[5]}
+              </p>
+            </div>
+          );
+        })}
+      </div>}
+      
+    </div>
+  );
 }
