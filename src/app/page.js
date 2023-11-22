@@ -31,8 +31,10 @@ export default function Home() {
   const [deleteId, setDeleteId] = useState("");
   const [copyAbc, setCopyAbc] = useState("");
 
-  // const [idCount, setIdCount] = useState(0);
-  // const [formCount, setFormCount] = useState(0);
+  const [idCount, setIdCount] = useState(0);
+  const [formCount, setFormCount] = useState(0);
+
+  
   // let idCount = 0;
   // let formCount = 0;
   // const { idCount, setIdCount,formCount,setFormCount,formCount2 } = useContext(GlobalContext);
@@ -100,8 +102,15 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchWorkList();
-  }, []);
+   
+    setIdCount(idCount2);
+    setFormCount(formCount2)
+    console.log('useEffect run');
+
+    if(workList.length === 0){
+      fetchWorkList();
+    }
+  }, [workList]);
   return (
     <div className="min-h-screen">
       <ConfirmButton
@@ -179,8 +188,8 @@ export default function Home() {
           </h1>
           {/* <p>ABC ID : {idCount}</p>
   <p>Money : {idCount*25}</p> */}
-          <p>ABC ID : {idCount2}</p>
-          <p>Money : ₹{idCount2 * 25}</p>
+          <p>ABC ID : {idCount}</p>
+          <p>Money : ₹{idCount * 25}</p>
         </div>
         <div className="w-[40%] text-4xl text-center p-5 bg-green-200 rounded-xl">
           <h1 className="m-auto mb-3 -mt-2 w-[80%] border-b-2 border-gray-500">
@@ -188,8 +197,8 @@ export default function Home() {
           </h1>
           {/* <p>ABC ID : {idCount}</p>
   <p>Money : {idCount*25}</p> */}
-          <p>ABC ID : {formCount2}</p>
-          <p>Money : ₹{formCount2 * 25}</p>
+          <p>ABC ID : {formCount}</p>
+          <p>Money : ₹{formCount * 25}</p>
         </div>
       </div>
 
@@ -207,8 +216,12 @@ export default function Home() {
               totalId = 0;
               totalForm = 0;
             }
-            console.log(TodayDate,item.date[3])
-            if(TodayDate === item.date[3]){
+
+
+            
+
+            if(TodayDate == item.date[3]){
+              console.log(typeof TodayDate,typeof item.date[3],item.abcId,idCount2,index)
               if (item.abcId === "yes") {
                 // setIdCount(idCount+1);
                 idCount2 += 1;
@@ -226,6 +239,10 @@ export default function Home() {
               // setFormCount((id)=> id+1);
               totalForm += 1;
             }
+
+
+            
+
             return (
               <div
                 onContextMenu={(ev) => {
@@ -276,6 +293,9 @@ export default function Home() {
           })}
         </div>
       )}
+
+
+      
 
 <div className="flex flex-wrap justify-around items-center gap-5 my-5 w-[70%] m-auto">
         <div className="w-[40%] text-4xl text-center p-5 bg-rose-200 rounded-xl">
