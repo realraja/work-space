@@ -126,9 +126,9 @@ export default function Home() {
       </div>
 
       <div className="bg-gradient-to-r from-rose-800 to-violet-500 rounded w-[80%] m-auto py-5">
-        <div className="flex justify-center items-center gap-x-6 ">
+        <div className="flex flex-wrap justify-center items-center gap-x-6 ">
           <input
-            className="w-[30%] border-[1px] rounded-xl border-gray-500 outline-none py-1 px-3 text-lg"
+            className="w-[80%] mx-5 sm:w-[30%] border-[1px] rounded-xl border-gray-500 outline-none py-1 px-3 text-lg"
             value={id}
             onChange={(e) => setId(e.target.value)}
             type="number"
