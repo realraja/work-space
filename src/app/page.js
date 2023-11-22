@@ -207,6 +207,7 @@ export default function Home() {
               totalId = 0;
               totalForm = 0;
             }
+            console.log(TodayDate,item.date[3])
             if(TodayDate === item.date[3]){
               if (item.abcId === "yes") {
                 // setIdCount(idCount+1);
