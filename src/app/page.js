@@ -221,7 +221,7 @@ export default function Home() {
             
 
             if(TodayDate == item.date[3]){
-              console.log(typeof TodayDate,typeof item.date[3],item.abcId,idCount2,index)
+              // console.log(typeof TodayDate,typeof item.date[3],item.abcId,idCount2,index)
               if (item.abcId === "yes") {
                 // setIdCount(idCount+1);
                 idCount2 += 1;
