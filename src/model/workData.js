@@ -13,7 +13,7 @@ const WorkSchema = new Schema({
     type: String,
     require: true,
   },
-  
+  money:String,
   
     date:[],
   createdAt: {

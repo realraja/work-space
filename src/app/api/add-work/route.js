@@ -4,9 +4,9 @@ import { NextResponse } from "next/server";
 
 
 export const POST = async(req) =>{
-    const {id,abcId,form} = await req.json();
+    const {id,abcId,form,money} = await req.json();
 
-    if(!id,!abcId,!form){
+    if(!id,!abcId,!form,!money){
         return NextResponse.json({
             status: 404,
             success: false,
@@ -17,7 +17,7 @@ export const POST = async(req) =>{
     try {
         await connectDB();
 
-        const work = await Work.create({id,abcId,form,date:[new Date().getSeconds(),new Date().getMinutes(),new Date().getHours(),new Date().getDate(),new Date().getMonth()+1,new Date().getFullYear()]})
+        const work = await Work.create({id,abcId,form,money,date:[new Date().getSeconds(),new Date().getMinutes(),new Date().getHours(),new Date().getDate(),new Date().getMonth()+1,new Date().getFullYear()]})
 
         if(!work){
             return NextResponse.json({
