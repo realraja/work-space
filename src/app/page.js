@@ -198,7 +198,7 @@ export default function Home() {
           {/* <p>ABC ID : {idCount}</p>
   <p>Money : {idCount*25}</p> */}
           <p>ABC ID : {formCount}</p>
-          <p>Money : ₹{formCount * 25}</p>
+          <p>Money : ₹{formCount * 50}</p>
         </div>
       </div>
 
@@ -314,7 +314,7 @@ export default function Home() {
           {/* <p>ABC ID : {idCount}</p>
   <p>Money : {idCount*25}</p> */}
           <p>ABC ID : {totalForm}</p>
-          <p>Money : ₹{totalForm * 25}</p>
+          <p>Money : ₹{totalForm * 50}</p>
         </div>
       </div>
 
