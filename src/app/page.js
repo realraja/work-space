@@ -6,11 +6,13 @@ import { RxCross2 } from "react-icons/rx";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import {GridLoader} from 'react-spinners'
+import { GridLoader } from "react-spinners";
 import ConfirmButton from "./components/ConfirmDelete";
 import { GlobalContext } from "@/context";
 
-let idCount2 = 0;
+let idCount2,formCount2,totalId,totalForm = 0;
+// let formCount2 = 0;
+
 export default function Home() {
   const [id, setId] = useState("");
   const [abcId, setAbcId] = useState(false);
@@ -22,63 +24,65 @@ export default function Home() {
   const [isError, setIsError] = useState(false);
 
   const [deleteConfirm, setDeleteConfirm] = useState(false);
-  const [deleteId, setDeleteId] = useState('');
+  const [deleteId, setDeleteId] = useState("");
+  const [copyAbc, setCopyAbc] = useState("");
 
-
-  
   // const [idCount, setIdCount] = useState(0);
   // const [formCount, setFormCount] = useState(0);
   // let idCount = 0;
   // let formCount = 0;
-  const { idCount, setIdCount,formCount,setFormCount,formCount2 } = useContext(GlobalContext);
+  // const { idCount, setIdCount,formCount,setFormCount,formCount2 } = useContext(GlobalContext);
 
-
-  const handleAddForm = async () =>{
+  const handleAddForm = async () => {
+    if(!abcId && !form){
+      return toast.error('Please check atleast one!');
+    }
     try {
-      const {data} = await axios.post('/api/add-work',{
-        id,abcId: abcId?'yes':'no' ,
-        form: form?'yes':'no' ,
-        money: money?'online':'cash' 
-      })
-  
-      if(data.success){
+      const { data } = await axios.post("/api/add-work", {
+        id,
+        abcId: abcId ? "yes" : "no",
+        form: form ? "yes" : "no",
+        money: money ? "online" : "cash",
+      });
+
+      if (data.success) {
         fetchWorkList();
         toast.success(data.message);
-      }else{
+      } else {
         toast.error(data.message);
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
       toast.error(error.message);
     }
-  }
+  };
 
-  const handleDelete = async() =>{
+  const handleDelete = async () => {
     try {
-      const {data} = await axios.delete(`/api/add-work/${deleteId}`)
-      console.log(data)
-      if(data.success){
-        toast.success(data.message)
+      const { data } = await axios.delete(`/api/add-work/${deleteId}`);
+      console.log(data);
+      if (data.success) {
+        toast.success(data.message);
         fetchWorkList();
-      }else{
-        toast.error(data.message)
+      } else {
+        toast.error(data.message);
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message)
+      toast.error(error.message);
     }
-  }
+  };
 
-
-  const fetchWorkList = async() =>{
+  const fetchWorkList = async () => {
     try {
-      const {data} = await axios.get('/api/add-work');
+      const { data } = await axios.get("/api/add-work");
       console.log(data);
-      if(data.success){
+      if (data.success) {
         setPageLoading(false);
-        idCount2 = 0;
+        // idCount2 = 0;
+        // formCount2 = 0;
         setWorkList(data.data);
-      }else{
+      } else {
         setPageLoading(false);
         setIsError(true);
         toast.success(data.message);
@@ -89,14 +93,20 @@ export default function Home() {
       setPageLoading(false);
       setIsError(true);
     }
-  }
+  };
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchWorkList();
-  },[])
+  }, []);
   return (
     <div>
-      <ConfirmButton comfirmState={deleteConfirm} setComfirmState={setDeleteConfirm} buttonText={'Delete'} runFunction={handleDelete} />
+      <ConfirmButton
+        comfirmState={deleteConfirm}
+        setComfirmState={setDeleteConfirm}
+        buttonText={"Delete"}
+        runFunction={handleDelete}
+        copy={copyAbc}
+      />
       {/* <TheAddForm comfirmState={confirm} setComfirmState={setConfirm} /> */}
       <div className="bg-gradient-to-r from-rose-800 to-violet-500 rounded text-4xl w-[90%] m-auto py-3 my-3 text-center">
         <h1>Filled Forms</h1>
@@ -159,69 +169,130 @@ export default function Home() {
       </div>
 
       <div className="flex flex-wrap justify-around items-center gap-5 my-5 w-[70%] m-auto">
-
-<div className="w-[40%] text-4xl text-center p-5 bg-sky-200">
-  <p>Today</p>
-  {/* <p>ABC ID : {idCount}</p>
+        <div className="w-[40%] text-4xl text-center p-5 bg-rose-200 rounded-xl">
+          <h1 className="m-auto mb-3 -mt-2 w-[60%] border-b-2 border-gray-500">
+            Today Id
+          </h1>
+          {/* <p>ABC ID : {idCount}</p>
   <p>Money : {idCount*25}</p> */}
-  <p>ABC ID : {idCount2}</p>
-  <p>Money : {idCount2*25}</p>
-
-</div>
+          <p>ABC ID : {idCount2}</p>
+          <p>Money : ₹{idCount2 * 25}</p>
+        </div>
+        <div className="w-[40%] text-4xl text-center p-5 bg-green-200 rounded-xl">
+          <h1 className="m-auto mb-3 -mt-2 w-[80%] border-b-2 border-gray-500">
+            Today Form
+          </h1>
+          {/* <p>ABC ID : {idCount}</p>
+  <p>Money : {idCount*25}</p> */}
+          <p>ABC ID : {formCount2}</p>
+          <p>Money : ₹{formCount2 * 25}</p>
+        </div>
       </div>
 
-{loading?<div className='h-[40vh] w-full flex flex-col items-center justify-center'> <GridLoader speedMultiplier={2} color='red' size={40} /> </div> :<div className="flex flex-wrap justify-around items-center gap-5 my-5 w-[70%] m-auto">
-        
-        {workList.map((item) => {
-          if(item.abcId === 'yes'){
-            // setIdCount(idCount+1);
-            idCount2 = idCount2 + 1;
-            console.log(idCount2)
-          }
-          if(item.form === 'yes'){
-            // setFormCount((id)=> id+1);
-            // formCount2 = formCount2 + 1;
-          }
-          return (
-            <div
-              onContextMenu={(ev) => {
-                ev.preventDefault();
-                setDeleteId(item._id);
-                setDeleteConfirm(true);
-              }}
-              key={item._id}
-              className={`${(item.date[3]+item.date[4])%2 === 0? 'bg-sky-200':'bg-fuchsia-200'} flex flex-col justify-center items-center text-center border-2 rounded-xl p-3   space-y-3  hover:bg-black/10`}
-            >
-              <h1 className="mb-3 text-rose-600 min-w-[50%] border-b-2 border-gray-500 uppercase">
-                {item.money}
-              </h1>
-
-              {item.id && (
-                <div
-                  className=" flex justify-around p-1 border-[1px] rounded cursor-pointer text-2xl  hover:text-violet-700 gap-1"
-                >
-                  <span>ABC :</span>
-                  {item.abcId === 'no'?<RxCross2 className="m-auto text-rose-400" />:<FaCheck className="m-auto text-green-400" />}
-                  {/* <marquee truespeed>{id} </marquee> */}
-                  {/* <IoCopyOutline className="m-auto" /> */}
-                </div>
-              )}
-
-              <button
-                className="flex justify-around p-1 items-center border-[1px] rounded cursor-pointer text-2xl  hover:text-violet-700 gap-1"
+      {loading ? (
+        <div className="h-[40vh] w-full flex flex-col items-center justify-center">
+          {" "}
+          <GridLoader speedMultiplier={2} color="red" size={40} />{" "}
+        </div>
+      ) : (
+        <div className="flex flex-wrap justify-around items-center gap-5 my-5 w-[70%] m-auto">
+          {workList.map((item, index) => {
+            if (index === 0) {
+              idCount2 = 0;
+              formCount2 = 0;
+              totalId = 0;
+              totalForm = 0;
+            }
+            if(new Date().getDate() === item.date[3]){
+              if (item.abcId === "yes") {
+                // setIdCount(idCount+1);
+                idCount2 += 1;
+              }
+              if (item.form === "yes") {
+                // setFormCount((id)=> id+1);
+                formCount2 += 1;
+              }
+            }
+            if (item.abcId === "yes") {
+              // setIdCount(idCount+1);
+              totalId += 1;
+            }
+            if (item.form === "yes") {
+              // setFormCount((id)=> id+1);
+              totalForm += 1;
+            }
+            return (
+              <div
+                onContextMenu={(ev) => {
+                  ev.preventDefault();
+                  setDeleteId(item._id);
+                  setDeleteConfirm(true);
+                  setCopyAbc(item.id);
+                }}
+                key={item._id}
+                className={`${
+                  (item.date[3] + item.date[4]) % 2 === 0
+                    ? "bg-sky-200"
+                    : "bg-fuchsia-200"
+                } flex flex-col justify-center items-center text-center border-2 rounded-xl p-3   space-y-3  hover:bg-black/10`}
               >
-              <span>FORM :</span>
-              {item.form === 'no'?<RxCross2 className="m-auto text-rose-400" />:<FaCheck className="m-auto text-green-400" />}
-                {/* <IoCopyOutline className="m-auto" /> */}
-              </button>
-              <p className="flex">
-              {item.date[2]}:{item.date[1]}| {item.date[3]}-{item.date[4]}-{item.date[5]}
-              </p>
-            </div>
-          );
-        })}
-      </div>}
-      
+                <h1 className="mb-3 text-rose-600 min-w-[50%] border-b-2 border-gray-500 uppercase">
+                  {item.money}
+                </h1>
+
+                {item.id && (
+                  <div className=" flex justify-around p-1 border-[1px] border-gray-400 rounded cursor-pointer text-2xl  hover:text-violet-700 gap-1">
+                    <span>ABC :</span>
+                    {item.abcId === "no" ? (
+                      <RxCross2 className="m-auto text-rose-400" />
+                    ) : (
+                      <FaCheck className="m-auto text-green-400" />
+                    )}
+                    {/* <marquee truespeed>{id} </marquee> */}
+                    {/* <IoCopyOutline className="m-auto" /> */}
+                  </div>
+                )}
+
+                <button className="flex justify-around p-1 items-center border-[1px] border-gray-400 rounded cursor-pointer text-2xl  hover:text-violet-700 gap-1">
+                  <span>FORM :</span>
+                  {item.form === "no" ? (
+                    <RxCross2 className="m-auto text-rose-400" />
+                  ) : (
+                    <FaCheck className="m-auto text-green-400" />
+                  )}
+                  {/* <IoCopyOutline className="m-auto" /> */}
+                </button>
+                <p className="flex">
+                  {item.date[2]}:{item.date[1]}| {item.date[3]}-{item.date[4]}-
+                  {item.date[5]}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+<div className="flex flex-wrap justify-around items-center gap-5 my-5 w-[70%] m-auto">
+        <div className="w-[40%] text-4xl text-center p-5 bg-rose-200 rounded-xl">
+          <h1 className="m-auto mb-3 -mt-2 w-[60%] border-b-2 border-gray-500">
+            Total Id
+          </h1>
+          {/* <p>ABC ID : {idCount}</p>
+  <p>Money : {idCount*25}</p> */}
+          <p>ABC ID : {totalId}</p>
+          <p>Money : ₹{totalId * 25}</p>
+        </div>
+        <div className="w-[40%] text-4xl text-center p-5 bg-green-200 rounded-xl">
+          <h1 className="m-auto mb-3 -mt-2 w-[80%] border-b-2 border-gray-500">
+            Total Form
+          </h1>
+          {/* <p>ABC ID : {idCount}</p>
+  <p>Money : {idCount*25}</p> */}
+          <p>ABC ID : {totalForm}</p>
+          <p>Money : ₹{totalForm * 25}</p>
+        </div>
+      </div>
+
     </div>
   );
 }

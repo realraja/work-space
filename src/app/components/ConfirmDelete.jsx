@@ -1,11 +1,13 @@
 import { Fragment, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import toast from "react-hot-toast";
 
 const ConfirmButton = ({
   comfirmState,
   setComfirmState,
   buttonText,
-  runFunction
+  runFunction,
+  copy
 }) => {
 
   const cancelButtonRef = useRef(null);
@@ -79,6 +81,17 @@ const ConfirmButton = ({
                   </div>
                 </div>
                 <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                  <button
+                    type="button"
+                    className="inline-flex w-full justify-center rounded-md bg-sky-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-500 sm:ml-3 sm:w-auto"
+                    onClick={() => {
+                      setComfirmState(false);
+                      navigator.clipboard.writeText(copy);
+                      toast.success(copy);
+                    }}
+                  >
+                    Copy Id
+                  </button>
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
