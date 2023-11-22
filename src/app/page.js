@@ -10,7 +10,11 @@ import { GridLoader } from "react-spinners";
 import ConfirmButton from "./components/ConfirmDelete";
 import { GlobalContext } from "@/context";
 
-let idCount2,formCount2,totalId,totalForm = 0;
+let idCount2 = 0;
+let formCount2 = 0;
+let totalId = 0;
+let totalForm = 0;
+let TodayDate = new Date().getDate();
 // let formCount2 = 0;
 
 export default function Home() {
@@ -99,7 +103,7 @@ export default function Home() {
     fetchWorkList();
   }, []);
   return (
-    <div>
+    <div className="min-h-screen">
       <ConfirmButton
         comfirmState={deleteConfirm}
         setComfirmState={setDeleteConfirm}
@@ -203,7 +207,7 @@ export default function Home() {
               totalId = 0;
               totalForm = 0;
             }
-            if(new Date().getDate() === item.date[3]){
+            if(TodayDate === item.date[3]){
               if (item.abcId === "yes") {
                 // setIdCount(idCount+1);
                 idCount2 += 1;
